@@ -107,87 +107,135 @@
       const ageInput = document.getElementById("age");
       const submitBtn = document.getElementById("submitBtn");
 
-      const validationRules = {
-        name: {
-          validator: (value) => value.length >= 3,
-          message: "Name must be at least 3 characters",
-        },
-        email: {
-          validator: (value) => value.includes("@") && value.includes("."),
-          message: "Email must contain @ and .",
-        },
-        password: {
-          validator: (value) => value.length >= 6 && /\d/.test(value),
-          message: "Password must be at least 6 characters with a number",
-        },
-        confirmPassword: {
-          validator: (value) =>
-            value === passwordInput.value && value.length > 0,
-          message: "Passwords must match",
-        },
-        age: {
-          validator: (value) => value >= 18 && value <= 60,
-          message: "Age must be between 18 and 60",
-        },
-      };
-
-      function validateField(fieldName, input) {
-        const rule = validationRules[fieldName];
-        const isValid = rule.validator(input.value);
-        const errorEl = document.getElementById(fieldName + "Error");
-
-        if (isValid) {
-          input.classList.remove("input-invalid");
-          input.classList.add("input-valid");
-          errorEl.textContent = "";
+      function checkName() {
+        var error = document.getElementById("nameError");
+        if (nameInput.value.length >= 3) {
+          nameInput.classList.remove("input-invalid");
+          nameInput.classList.add("input-valid");
+          error.textContent = "";
+          return true;
         } else {
-          input.classList.remove("input-valid");
-          input.classList.add("input-invalid");
-          errorEl.textContent = rule.message;
+          nameInput.classList.remove("input-valid");
+          nameInput.classList.add("input-invalid");
+          error.textContent = "Name must be at least 3 characters";
+          return false;
         }
-
-        return isValid;
       }
 
-      function isFormValid() {
-        return Object.keys(validationRules).every((field) =>
-          validationRules[field].validator(
-            document.getElementById(field).value,
-          ),
-        );
+      function checkEmail() {
+        var error = document.getElementById("emailError");
+        if (emailInput.value.includes("@") && emailInput.value.includes(".")) {
+          emailInput.classList.remove("input-invalid");
+          emailInput.classList.add("input-valid");
+          error.textContent = "";
+          return true;
+        } else {
+          emailInput.classList.remove("input-valid");
+          emailInput.classList.add("input-invalid");
+          error.textContent = "Email must contain @ and .";
+          return false;
+        }
+      }
+
+      function checkPassword() {
+        var error = document.getElementById("passwordError");
+        var hasNumber = false;
+        var i = 0;
+        while (i < passwordInput.value.length) {
+          if (passwordInput.value[i] >= "0" && passwordInput.value[i] <= "9") {
+            hasNumber = true;
+          }
+          i = i + 1;
+        }
+
+        if (passwordInput.value.length >= 6 && hasNumber) {
+          passwordInput.classList.remove("input-invalid");
+          passwordInput.classList.add("input-valid");
+          error.textContent = "";
+          return true;
+        } else {
+          passwordInput.classList.remove("input-valid");
+          passwordInput.classList.add("input-invalid");
+          error.textContent =
+            "Password must be at least 6 characters with a number";
+          return false;
+        }
+      }
+
+      function checkConfirmPassword() {
+        var error = document.getElementById("confirmPasswordError");
+        if (
+          confirmPasswordInput.value.length > 0 &&
+          confirmPasswordInput.value === passwordInput.value
+        ) {
+          confirmPasswordInput.classList.remove("input-invalid");
+          confirmPasswordInput.classList.add("input-valid");
+          error.textContent = "";
+          return true;
+        } else {
+          confirmPasswordInput.classList.remove("input-valid");
+          confirmPasswordInput.classList.add("input-invalid");
+          error.textContent = "Passwords must match";
+          return false;
+        }
+      }
+
+      function checkAge() {
+        var error = document.getElementById("ageError");
+        if (ageInput.value >= 18 && ageInput.value <= 60) {
+          ageInput.classList.remove("input-invalid");
+          ageInput.classList.add("input-valid");
+          error.textContent = "";
+          return true;
+        } else {
+          ageInput.classList.remove("input-valid");
+          ageInput.classList.add("input-invalid");
+          error.textContent = "Age must be between 18 and 60";
+          return false;
+        }
       }
 
       function updateSubmitButton() {
-        submitBtn.disabled = !isFormValid();
+        const nameOk = checkName();
+        const emailOk = checkEmail();
+        const passwordOk = checkPassword();
+        const confirmPasswordOk = checkConfirmPassword();
+        const ageOk = checkAge();
+
+        if (nameOk && emailOk && passwordOk && confirmPasswordOk && ageOk) {
+          submitBtn.disabled = false;
+        } else {
+          submitBtn.disabled = true;
+        }
       }
 
-      nameInput.addEventListener("input", () => {
-        validateField("name", nameInput);
+      nameInput.addEventListener("input", function () {
+        checkName();
         updateSubmitButton();
       });
 
-      emailInput.addEventListener("input", () => {
-        validateField("email", emailInput);
+      emailInput.addEventListener("input", function () {
+        checkEmail();
         updateSubmitButton();
       });
 
-      passwordInput.addEventListener("input", () => {
-        validateField("password", passwordInput);
-        validateField("confirmPassword", confirmPasswordInput);
+      passwordInput.addEventListener("input", function () {
+        checkPassword();
+        checkConfirmPassword();
         updateSubmitButton();
       });
 
-      confirmPasswordInput.addEventListener("input", () => {
-        validateField("confirmPassword", confirmPasswordInput);
+      confirmPasswordInput.addEventListener("input", function () {
+        checkConfirmPassword();
         updateSubmitButton();
       });
 
-      ageInput.addEventListener("input", () => {
-        validateField("age", ageInput);
+      ageInput.addEventListener("input", function () {
+        checkAge();
         updateSubmitButton();
       });
 
-      form.addEventListener("submit", (e) => {
+      form.addEventListener("submit", function (e) {
         e.preventDefault();
         alert("Form submitted successfully!");
       });
